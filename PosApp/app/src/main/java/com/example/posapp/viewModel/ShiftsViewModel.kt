@@ -39,13 +39,13 @@ class ShiftsViewModel(private val shiftsDao: ShiftsDao) : ViewModel() {
     }
 }
 
-    class ShiftsViewModelFactory(private val shiftsDao: ShiftsDao) : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(ShiftsViewModel::class.java)) {
-                @Suppress("UNCHECKED_CAST")
-                return ShiftsViewModel(shiftsDao) as T
-            }
-            throw IllegalArgumentException("Unknown ViewModel class")
+class ShiftsViewModelFactory(private val shiftsDao: ShiftsDao) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(ShiftsViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return ShiftsViewModel(shiftsDao) as T
         }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
+}
 

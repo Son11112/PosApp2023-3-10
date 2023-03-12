@@ -1,5 +1,6 @@
 package com.example.posapp
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -8,22 +9,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.posapp.viewModel.NotificationViewModel
-import com.example.posapp.viewModel.NotificationViewModelFactory
-import com.example.posapp.data.MyRoomDatabase
 import com.example.posapp.databinding.FragmentAddNotificationBinding
 
 class FragmentAddNotification : Fragment() {
 
     private var _binding: FragmentAddNotificationBinding? = null
     private val binding get() = _binding!!
-    private val viewModel:NotificationViewModel by activityViewModels {
-        NotificationViewModelFactory(
-            MyRoomDatabase.getDatabase(requireContext()).notificationDao()
-        )
-    }
+    private lateinit var notificationViewModel: NotificationViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,22 +39,13 @@ class FragmentAddNotification : Fragment() {
         }
     }
 
-    private fun isEntryValid(): Boolean {
-        return viewModel.isEntryValid(
+    @SuppressLint("SuspiciousIndentation")
+    private fun addNewItem() {
+        notificationViewModel.addNewItem(
             "${binding.datePicker3.year}-${binding.datePicker3.month}-${binding.datePicker3.dayOfMonth}",
             binding.edtSubject.text.toString(),
             binding.edtDetailed.text.toString()
         )
-    }
-
-    private fun addNewItem() {
-        if (isEntryValid()) {
-            viewModel.addNewItem(
-                "${binding.datePicker3.year}-${binding.datePicker3.month}-${binding.datePicker3.dayOfMonth}",
-                binding.edtSubject.text.toString(),
-                binding.edtDetailed.text.toString()
-            )
-        }
     }
 
     override fun onDestroyView() {

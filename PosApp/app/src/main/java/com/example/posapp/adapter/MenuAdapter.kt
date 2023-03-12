@@ -14,14 +14,14 @@ import com.example.posapp.data.MenuData
 class MenuAdapter(
     private val context: Context,
     var dataset: List<MenuData>
-):RecyclerView.Adapter<MenuAdapter.MenuDataViewHolder>() {
+) : RecyclerView.Adapter<MenuAdapter.MenuDataViewHolder>() {
 
-    class MenuDataViewHolder( private val view: View) : RecyclerView.ViewHolder(view) {
-        val kindsTextView:TextView = view.findViewById(R.id.tvKinds)
-        val priceTextView:TextView = view.findViewById(R.id.tvPrice)
-        val quantityTextView:TextView = view.findViewById(R.id.tvQuantity)
-        val nameTextView:TextView = view.findViewById(R.id.tvName)
-        val imageView:ImageView = view.findViewById(R.id.imgImage)
+    class MenuDataViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+        val kindsTextView: TextView = view.findViewById(R.id.tvKinds)
+        val priceTextView: TextView = view.findViewById(R.id.tvPrice)
+        val quantityTextView: TextView = view.findViewById(R.id.tvQuantity)
+        val nameTextView: TextView = view.findViewById(R.id.tvName)
+        val imageView: ImageView = view.findViewById(R.id.imgImage)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MenuDataViewHolder {

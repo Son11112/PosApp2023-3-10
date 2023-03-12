@@ -8,9 +8,10 @@ import com.example.posapp.dao.NotificationDao
 import com.example.posapp.data.NotificationData
 import kotlinx.coroutines.launch
 
-class NotificationViewModel (private val notificationDao: NotificationDao) :ViewModel() {
+class NotificationViewModel(private val notificationDao: NotificationDao) : ViewModel() {
 
-    private val allNotification: LiveData<List<NotificationData>> = notificationDao.getNotification()
+    private val allNotification: LiveData<List<NotificationData>> =
+        notificationDao.getNotification()
 
     fun getNotification(): LiveData<List<NotificationData>> {
         return notificationDao.getNotification()
@@ -31,16 +32,10 @@ class NotificationViewModel (private val notificationDao: NotificationDao) :View
             notificationDao.insert(notificationData)
         }
     }
+}
 
-    fun isEntryValid(date: String, subject: String, detailed: String): Boolean {
-        if ( date.isBlank() || subject.isBlank() ||detailed.isBlank() ) {
-            return false
-        }
-        return true
-        }
-    }
-
-class NotificationViewModelFactory(private val notificationDao: NotificationDao) : ViewModelProvider.Factory {
+class NotificationViewModelFactory(private val notificationDao: NotificationDao) :
+    ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(NotificationViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
@@ -49,3 +44,4 @@ class NotificationViewModelFactory(private val notificationDao: NotificationDao)
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
+

@@ -13,19 +13,21 @@ import com.example.posapp.databinding.OrderItemBinding
 class OrderAdapter(
     val context: Context,
     var dataset: List<MenuData>,
-    private val itemList:MutableList<OrderFoodItem>,
-) : RecyclerView.Adapter<OrderDataViewHolder>() {
+    private val itemList: MutableList<OrderFoodItem>,
+) : RecyclerView.Adapter<OrderAdapter.OrderDataViewHolder>() {
 
-    inner class OrderDataViewHolder(private val binding: OrderItemBinding) : RecyclerView.ViewHolder(binding.root) {
-        var currentOrderId = 0
-        var quantityInCart = 0
-
+    inner class OrderDataViewHolder(private val binding: OrderItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         private val priceTextView = binding.tvPrice
         private val quantityOfStockTextView = binding.tvQuantityOfStock
         private val nameTextView = binding.tvNameItem
         val imageView = binding.imgItem
+        val btnIncreaseQuantity = binding.btnIncreaseQuantity
+        val btnDecreaseQuantity = binding.btnDecreaseQuantity
+        val tvQuantityOfCart = binding.tvQuantityOfCart
 
-        fun onBindViewHolder(item: MenuData,items: OrderFoodItem) {
+        fun bind(orderFoodItem: OrderFoodItem) {
+            val item = dataset[adapterPosition]
             priceTextView.text = item.productPrice.toString()
             quantityOfStockTextView.text = item.productQuantity.toString()
             nameTextView.text = item.productName
@@ -34,40 +36,66 @@ class OrderAdapter(
                     .asBitmap()
                     .load(item.productImage)
                     .into(imageView)
-                binding.btnIncreaseQuantity.setOnClickListener {
-                    increaseQuantity(dataset[position],items, binding)
+                btnIncreaseQuantity.setOnClickListener {
+                    increaseQuantity(item, orderFoodItem, binding)
                 }
-                binding.btnDecreaseQuantity.setOnClickListener {
-                    decreaseQuantity(dataset[position],items, binding)
+                btnDecreaseQuantity.setOnClickListener {
+                    decreaseQuantity(item, orderFoodItem, binding)
                 }
             } else {
                 imageView.setImageBitmap(null)
             }
+            // Set lại giá trị quantity của OrderFoodItem
+            tvQuantityOfCart.text = orderFoodItem.quantityInCart.toString()
         }
     }
 
-    fun increaseQuantity(menuData: MenuData, orderFoodItem: OrderFoodItem, binding: OrderItemBinding) {
+    fun increaseQuantity(
+        menuData: MenuData,
+        orderFoodItem: OrderFoodItem,
+        binding: OrderItemBinding
+    ) {
+        // Tìm kiếm xem sản phẩm được chọn đã có trong giỏ hàng chưa
+        val items = itemList.find { it.foodItemId == menuData.id }
 
-        // kiem tra mon an nao?
-        val items = itemList.find { it.foodItemId ==menuData.id }
-        // Nếu đã có trong danh sách OrderFoodItem, tăng số lượng lên 1
-        orderFoodItem.quantityInCart++
-        // Hiển thị số lượng đang có trong giỏ hàng
+        if (items != null) {
+            // Nếu sản phẩm đã có trong giỏ hàng, tăng số lượng lên 1
+            items.quantityInCart++
+        } else {
+            // Nếu sản phẩm chưa có trong giỏ hàng, tạo một đối tượng mới và thêm vào danh sách itemList
+            val newItem = OrderFoodItem(
+                foodItemId = menuData.id,
+                quantityInCart = 1
+            )
+            itemList.add(newItem)
+        }
+
+        // Hiển thị số lượng đang có trong giỏ hàng và số lượng tạm thời của sản phẩm được chọn
         binding.tvQuantityOfCart.text = orderFoodItem.quantityInCart.toString()
+        menuData.tempQuantityInCart++
     }
 
+    fun decreaseQuantity(
+        menuData: MenuData,
+        orderFoodItem: OrderFoodItem,
+        binding: OrderItemBinding
+    ) {
+        // Tìm kiếm xem sản phẩm được chọn đã có trong giỏ hàng chưa
+        val items = itemList.find { it.foodItemId == menuData.id }
 
-    fun decreaseQuantity(menuData: MenuData, orderFoodItem: OrderFoodItem, binding: OrderItemBinding) {
+        if (items != null) {
+            // Nếu sản phẩm đã có trong giỏ hàng, giảm số lượng đi 1
+            items.quantityInCart--
 
-//         kiem tra mon an nao?
-
-
-//         tang so luong tuong ung
-        if(orderFoodItem.quantityInCart >0 ){
-            orderFoodItem.quantityInCart--
-
-            binding.tvQuantityOfCart.text = orderFoodItem.quantityInCart.toString()
+            // Nếu số lượng của sản phẩm trong giỏ hàng bằng 0 thì xoá sản phẩm đó khỏi danh sách itemList
+            if (items.quantityInCart == 0) {
+                itemList.remove(items)
+            }
         }
+
+        // Hiển thị số lượng đang có trong giỏ hàng và số lượng tạm thời của sản phẩm được chọn
+        binding.tvQuantityOfCart.text = orderFoodItem.quantityInCart.toString()
+        menuData.tempQuantityInCart--
     }
 
 
@@ -77,15 +105,44 @@ class OrderAdapter(
     }
 
     override fun onBindViewHolder(holder: OrderDataViewHolder, position: Int) {
-        holder.currentOrderId = dataset[position].id
-        val orderFoodItem = itemList.find { it.foodItemId == dataset[position].id }
-        holder.quantityInCart = orderFoodItem?.quantityInCart ?: 0 // gán giá trị mặc định là 0 nếu orderFoodItem là null
-        holder.onBindViewHolder(dataset[position], orderFoodItem ?: OrderFoodItem(0, 0, 0, 0,null,0))
+        val item = dataset[position]
+        holder.bind(item)
+
+        holder.btnIncreaseQuantity.setOnClickListener {
+            increaseQuantity(item, itemList[position], holder.binding)
+        }
+
+        holder.btnDecreaseQuantity.setOnClickListener {
+            decreaseQuantity(item, itemList[position], holder.binding)
+        }
+
+        // Hiển thị số lượng đặt món tạm thời của item
+        holder.tvQuantityOfCart.text = itemList[position].quantityInCart.toString()
+
+        holder.binding.btnAdd.setOnClickListener {
+            onAddClick(position)
+        }
+
+        holder.binding.btnMinus.setOnClickListener {
+            onMinusClick(position)
+        }
+
+        // Hiển thị số lượng đặt món tạm thời của item
+        holder.binding.tvQuantity.text = itemList[position].quantityInCart.toString()
     }
+
+
 
     override fun getItemCount(): Int {
         return dataset.size
     }
+
+    fun onAddClick(position: Int) {
+        val item = itemList[position]
+        item.quantityInCart++  // Tăng giá trị của trường tempQuantityInCart lên 1
+        notifyItemChanged(position)  // Cập nhật lại item tại vị trí position
+    }
+
 
     fun setData(newData: List<MenuData>) {
         dataset = newData

@@ -113,11 +113,17 @@ class FragmentAddMenu : Fragment() {
         viewModel.saveInstanceState(outState)
     }
 
-    private fun isEntryValid(): Boolean {
-        val price = binding.edtPrice.text.toString().toIntOrNull() ?: return false
-        val quantity = binding.edtQuantity.text.toString().toIntOrNull() ?: return false
+    private fun convertBitmapToByteArray(bitmap: Bitmap): ByteArray {
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        return stream.toByteArray()
+    }
 
-        return viewModel.isEntryValid(
+    @SuppressLint("SuspiciousIndentation")
+    private fun addNewItem() {
+        val price = binding.edtPrice.text.toString().toIntOrNull() ?: return
+        val quantity = binding.edtQuantity.text.toString().toIntOrNull() ?: return
+        viewModel.addNewItem(
             productKinds,
             binding.edtProductName.text.toString(),
             price,
@@ -125,37 +131,16 @@ class FragmentAddMenu : Fragment() {
             convertBitmapToByteArray(binding.imgImage.drawToBitmap()),
             productType
         )
+        // Clear input fields
+        binding.edtPrice.setText("")
+        binding.edtQuantity.setText("")
+        binding.edtProductName.setText("")
+        binding.cbxDrink.isChecked = false
+        binding.cbxDessert.isChecked = false
+        binding.cbxMainFood.isChecked = false
+        binding.imgImage.setImageBitmap(null)
     }
 
-    private fun convertBitmapToByteArray(bitmap: Bitmap): ByteArray {
-        val stream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-        return stream.toByteArray()
-    }
-
-    private fun addNewItem() {
-        val price = binding.edtPrice.text.toString().toIntOrNull() ?: return
-        val quantity = binding.edtQuantity.text.toString().toIntOrNull() ?: return
-
-        if (isEntryValid()) {
-            viewModel.addNewItem(
-                productKinds,
-                binding.edtProductName.text.toString(),
-                price,
-                quantity,
-                convertBitmapToByteArray(binding.imgImage.drawToBitmap()),
-                productType
-            )
-            // Clear input fields
-            binding.edtPrice.setText("")
-            binding.edtQuantity.setText("")
-            binding.edtProductName.setText("")
-            binding.cbxDrink.isChecked = false
-            binding.cbxDessert.isChecked = false
-            binding.cbxMainFood.isChecked = false
-            binding.imgImage.setImageBitmap(null)
-        }
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()

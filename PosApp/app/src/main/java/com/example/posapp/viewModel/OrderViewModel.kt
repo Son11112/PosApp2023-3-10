@@ -17,9 +17,10 @@ import java.util.*
 class OrderViewModel(
     private val orderDao: OrderDao,
     private val menuDao: MenuDao,
-    private val orderFoodItemDao: OrderFoodItemDao): ViewModel() {
+    private val orderFoodItemDao: OrderFoodItemDao
+) : ViewModel() {
 
-    fun getAllOrders() : LiveData<List<OrdersData>>{
+    fun getAllOrders(): LiveData<List<OrdersData>> {
         return orderDao.getAllOrders()
     }
 
@@ -39,58 +40,38 @@ class OrderViewModel(
         return orderFoodItemDao.getAllOrderFoodItem()
     }
 
-//    fun addNewItem(
-//        orderStatus: String,
-//        totalPrice: LiveData<List<OrderFoodItem>>,
-//        orderDate: String,
-//        orderTime: String,
-//        orderId: Int,
-//        foodItemId: Int,
-//        quantityInCart: Int,
-//        productOrderImage: ByteArray,
-//        orderProductPrice: Int){
-//        val newItem = OrdersData(
-//            totalPrice = totalPrice,
-//            orderDate = orderDate,
-//            orderTime = orderTime,
-//            orderStatus = orderStatus
-//        )
-//        val newItems = OrderFoodItem(
-//            orderId = orderId,
-//            foodItemId = foodItemId,
-//            quantityInCart = quantityInCart,
-//            productOrderImage = productOrderImage,
-//            orderProductPrice = orderProductPrice
-//        )
-//
-//    }
+    private val calendar = Calendar.getInstance()
+    private val orderDate =
+        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
+    private val orderTime = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(calendar.time)
 
-    val calendar = Calendar.getInstance()
-    val orderDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
-    val orderTime = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(calendar.time)
-    fun addNewItems(foodItems: List<OrderFoodItem>) {
-        var totalPrice = 0;
-        for (item in foodItems) {
-            insertFoodItem(item)
-            totalPrice += item.orderProductPrice
+    fun addNewItems(list: ArrayList<OrderFoodItem>) {
+        val order = OrdersData()
+        order.orderList = list
+        val orderId = orderDao.insertOrder(order).toInt()
+        for (item in list) {
+            val menuTable = menuDao.getMenuById(item.menuId)
+            val orderFoodItem = OrderFoodItem(orderId, menuTable, item.quantity)
+            orderFoodItemDao.insertOrderFoodItem(orderFoodItem)
+            // Cập nhật lại trường tempQuantityInCart cho menuTable
+            menuTable.tempQuantityInCart -= item.quantity
+            menuDao.updateMenu(menuTable)
         }
-        insertOrder(
-            OrdersData(0, "on_order", totalPrice, orderDate, orderTime)
-        )
     }
-    fun insertFoodItem(orderFoodItem: OrderFoodItem) {
+
+    private fun insertFoodItem(orderFoodItem: OrderFoodItem) {
         viewModelScope.launch {
             orderFoodItemDao.insert(orderFoodItem)
         }
     }
 
-    fun insertOrder(ordersData: OrdersData) {
+    private fun insertOrder(ordersData: OrdersData) {
         viewModelScope.launch {
             orderDao.insert(ordersData)
         }
     }
 
-    fun deleteOrder(orderId: Int,id: Int) {
+    fun deleteOrder(orderId: Int, id: Int) {
         viewModelScope.launch {
             orderDao.deleteById(id)
             orderFoodItemDao.deleteByOrderId(orderId)
@@ -100,18 +81,22 @@ class OrderViewModel(
     fun updateOrderFoodItem(ordersData: OrdersData, orderFoodItem: OrderFoodItem) {
         viewModelScope.launch {
             orderDao.update(ordersData)
-             orderFoodItemDao.update(orderFoodItem)
+            orderFoodItemDao.update(orderFoodItem)
         }
     }
+}
 
 
-    class OrderViewModelFactory(private val orderDao: OrderDao,private val menuDao: MenuDao,private val orderFoodItemDao: OrderFoodItemDao): ViewModelProvider.Factory{
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(OrderViewModel::class.java)) {
-                @Suppress("UNCHECKED_CAST")
-                return OrderViewModel(orderDao,menuDao,orderFoodItemDao) as T
-            }
-            throw IllegalArgumentException("Unknown ViewModel class")
+class OrderViewModelFactory(
+    private val orderDao: OrderDao,
+    private val menuDao: MenuDao,
+    private val orderFoodItemDao: OrderFoodItemDao
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(OrderViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return OrderViewModel(orderDao, menuDao, orderFoodItemDao) as T
         }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

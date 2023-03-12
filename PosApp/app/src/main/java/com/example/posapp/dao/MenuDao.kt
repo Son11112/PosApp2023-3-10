@@ -30,7 +30,7 @@ interface MenuDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(menuData: MenuData)
 
-    @Query("SELECT * FROM menu_table ORDER BY name ASC")
+    @Query("SELECT * FROM menu_table")
     fun getAllMenu(): LiveData<List<MenuData>>
 
     @Update

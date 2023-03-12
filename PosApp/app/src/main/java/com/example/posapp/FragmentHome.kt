@@ -63,7 +63,11 @@ class FragmentHome : Fragment() {
         val textViewDate = view.findViewById<TextView>(R.id.tvDate)
         val calendar = Calendar.getInstance()
         val currentDate =
-            "${calendar.get(Calendar.YEAR)}年${calendar.get(Calendar.MONTH)+1}月${calendar.get(Calendar.DATE)}日"
+            "${calendar.get(Calendar.YEAR)}年${calendar.get(Calendar.MONTH) + 1}月${
+                calendar.get(
+                    Calendar.DATE
+                )
+            }日"
         textViewDate.text = currentDate
         return view
     }
@@ -119,27 +123,33 @@ class FragmentHome : Fragment() {
                 val sys = jsonObj.getJSONObject("sys")
                 val wind = jsonObj.getJSONObject("wind")
                 val weather = jsonObj.getJSONArray("weather").getJSONObject(0)
-                val updatedAt:Long = jsonObj.getLong("dt")
-                val updatedAtText = "更新時: "+ SimpleDateFormat("yyyy/MM/dd hh:mm a", Locale.JAPANESE).format(Date(updatedAt*1000))
-                val temp = main.getString("temp")+"°C"
-                val tempMin = "最低気温: " + main.getString("temp_min")+"°C"
-                val tempMax = "最高気温: " + main.getString("temp_max")+"°C"
+                val updatedAt: Long = jsonObj.getLong("dt")
+                val updatedAtText =
+                    "更新時: " + SimpleDateFormat("yyyy/MM/dd hh:mm a", Locale.JAPANESE).format(
+                        Date(updatedAt * 1000)
+                    )
+                val temp = main.getString("temp") + "°C"
+                val tempMin = "最低気温: " + main.getString("temp_min") + "°C"
+                val tempMax = "最高気温: " + main.getString("temp_max") + "°C"
                 val pressure = main.getString("pressure")
                 val humidity = main.getString("humidity")
-                val sunrise:Long = sys.getLong("sunrise")
-                val sunset:Long = sys.getLong("sunset")
+                val sunrise: Long = sys.getLong("sunrise")
+                val sunset: Long = sys.getLong("sunset")
                 val windSpeed = wind.getString("speed")
                 val weatherDescription = weather.getString("description")
-                val address = jsonObj.getString("name")+", "+sys.getString("country")
+                val address = jsonObj.getString("name") + ", " + sys.getString("country")
 
                 view?.findViewById<TextView>(R.id.address)?.text = address
-                view?.findViewById<TextView>(R.id.updated_at)?.text =  updatedAtText
-                view?.findViewById<TextView>(R.id.status)?.text = weatherDescription.capitalize(Locale.JAPANESE)
+                view?.findViewById<TextView>(R.id.updated_at)?.text = updatedAtText
+                view?.findViewById<TextView>(R.id.status)?.text =
+                    weatherDescription.capitalize(Locale.JAPANESE)
                 view?.findViewById<TextView>(R.id.temp)?.text = temp
                 view?.findViewById<TextView>(R.id.temp_min)?.text = tempMin
                 view?.findViewById<TextView>(R.id.temp_max)?.text = tempMax
-                view?.findViewById<TextView>(R.id.sunrise)?.text = SimpleDateFormat("hh:mm a", Locale.JAPANESE).format(Date(sunrise*1000))
-                view?.findViewById<TextView>(R.id.sunset)?.text = SimpleDateFormat("hh:mm a", Locale.JAPANESE).format(Date(sunset*1000))
+                view?.findViewById<TextView>(R.id.sunrise)?.text =
+                    SimpleDateFormat("hh:mm a", Locale.JAPANESE).format(Date(sunrise * 1000))
+                view?.findViewById<TextView>(R.id.sunset)?.text =
+                    SimpleDateFormat("hh:mm a", Locale.JAPANESE).format(Date(sunset * 1000))
                 view?.findViewById<TextView>(R.id.wind)?.text = windSpeed
                 view?.findViewById<TextView>(R.id.pressure)?.text = pressure
                 view?.findViewById<TextView>(R.id.humidity)?.text = humidity

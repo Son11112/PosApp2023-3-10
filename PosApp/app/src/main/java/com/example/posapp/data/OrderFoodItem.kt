@@ -1,19 +1,19 @@
 package com.example.posapp.data
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.ForeignKey
 
-@Entity( tableName = "orders_food_items",
+@Entity(
+    tableName = "orders_food_items",
     foreignKeys = [
         ForeignKey(
-        entity = OrdersData::class,
-        parentColumns = ["id"],
-        childColumns = ["order_id"],
-        onDelete = ForeignKey.CASCADE
+            entity = OrdersData::class,
+            parentColumns = ["id"],
+            childColumns = ["order_id"],
+            onDelete = ForeignKey.CASCADE
         ),
 
         ForeignKey(
@@ -24,16 +24,18 @@ import androidx.room.ForeignKey
         ),
 
         ForeignKey(
-        entity = MenuData::class,
-        parentColumns = ["image"],
-        childColumns = ["order_image"],
-        onDelete = ForeignKey.CASCADE),
+            entity = MenuData::class,
+            parentColumns = ["image"],
+            childColumns = ["order_image"],
+            onDelete = ForeignKey.CASCADE
+        ),
 
         ForeignKey(
-        entity = MenuData::class,
-        parentColumns = ["price"],
-        childColumns = ["order_product_price"],
-        onDelete = ForeignKey.CASCADE)
+            entity = MenuData::class,
+            parentColumns = ["price"],
+            childColumns = ["order_product_price"],
+            onDelete = ForeignKey.CASCADE
+        )
     ],
     indices = [
         Index("order_id"),
@@ -44,11 +46,11 @@ import androidx.room.ForeignKey
 
 data class OrderFoodItem(
     @PrimaryKey(autoGenerate = true)
-    val id: Int= 0,
+    val id: Int = 0,
     @ColumnInfo(name = "order_id")
-    val orderId: Int= 0,
+    val orderId: Int = 0,
     @ColumnInfo(name = "food_item_id")
-    val foodItemId: Int= 0,
+    val foodItemId: Int = 0,
     @ColumnInfo(name = "quantity_in_cart")
     var quantityInCart: Int,
     @ColumnInfo(name = "order_image")

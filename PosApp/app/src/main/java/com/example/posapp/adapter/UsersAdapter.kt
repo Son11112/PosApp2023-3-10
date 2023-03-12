@@ -12,17 +12,17 @@ import com.example.posapp.data.UserData
 class UsersAdapter(
     val context: Context,
     var dataset: List<UserData>
-) :RecyclerView.Adapter<UsersAdapter.UserDataViewHolder>(){
+) : RecyclerView.Adapter<UsersAdapter.UserDataViewHolder>() {
 
-    class UserDataViewHolder (private val view: View) : RecyclerView.ViewHolder(view){
-        val employeeNameTextView : TextView = view.findViewById(R.id.tvName)
-        val employeeCodeTextView : TextView = view.findViewById(R.id.tvCode)
-        val employeePassTextView : TextView = view.findViewById(R.id.tvPass)
+    class UserDataViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+        val employeeNameTextView: TextView = view.findViewById(R.id.tvName)
+        val employeeCodeTextView: TextView = view.findViewById(R.id.tvCode)
+        val employeePassTextView: TextView = view.findViewById(R.id.tvPass)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) : UserDataViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserDataViewHolder {
         val adapterLayout = LayoutInflater.from(parent.context)
-            .inflate(R.layout.recycleview_users,parent,false)
+            .inflate(R.layout.recycleview_users, parent, false)
         return UserDataViewHolder(adapterLayout)
     }
 

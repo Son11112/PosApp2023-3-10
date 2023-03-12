@@ -8,7 +8,7 @@ import com.example.posapp.dao.UserDao
 import com.example.posapp.data.UserData
 import kotlinx.coroutines.launch
 
-class UserViewModel(private val userDao: UserDao) :ViewModel() {
+class UserViewModel(private val userDao: UserDao) : ViewModel() {
 
     private val allUser: LiveData<List<UserData>> = userDao.getAllUser()
 

@@ -8,7 +8,11 @@ import androidx.room.TypeConverters
 import com.example.posapp.dao.*
 import com.example.posapp.typeConverter.Converters
 
-@Database(entities = [ShiftsData::class,UserData::class,NotificationData::class,MenuData::class,OrdersData::class,OrderFoodItem::class], version = 1, exportSchema = false)
+@Database(
+    entities = [ShiftsData::class, UserData::class, NotificationData::class, MenuData::class, OrdersData::class, OrderFoodItem::class],
+    version = 1,
+    exportSchema = false
+)
 @TypeConverters(Converters::class)
 abstract class MyRoomDatabase : RoomDatabase() {
     abstract fun shiftsDao(): ShiftsDao
@@ -18,7 +22,7 @@ abstract class MyRoomDatabase : RoomDatabase() {
     abstract fun orderDao(): OrderDao
     abstract fun orderFoodItemDao(): OrderFoodItemDao
 
-    companion object{
+    companion object {
         @Volatile
         private var INSTANCE: MyRoomDatabase? = null
         fun getDatabase(context: Context): MyRoomDatabase {
